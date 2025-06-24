@@ -1,4 +1,4 @@
-# Laporan Proyek Machine Learning - Nama Anda
+# Laporan Proyek Machine Learning - Firman Fitrah Ramadhan
 
 ## Project Overview
 
@@ -26,7 +26,7 @@ Menjelaskan tujuan proyek yang menjawab pernyataan masalah:
 - Dengan mempermudah proses penemuan buku, tujuan akhirnya adalah untuk meningkatkan durasi kunjungan pengguna, mendorong lebih banyak interaksi (seperti membaca ulasan atau membeli buku), dan membangun loyalitas pelanggan.
 
 ## Data Understanding
-Dataset yang digunakan adalah Book-Recommendation-Dataset yang tersedia di platform Kaggle. Dataset ini awalnya dikumpulkan oleh Cai-Nicolas Ziegler dari komunitas Book-Crossing dan berisi data 278,858 users (anonymized) berisi 1,149,780 ratings (eksplisit / implisit) dari 271,379 buku. Contoh: [Kaggle](https://www.kaggle.com/datasets/arashnic/book-recommendation-dataset).
+Dataset yang digunakan adalah "Book-Recommendation-Dataset" yang tersedia di platform Kaggle. Dataset ini terdiri dari tiga file CSV terpisah: Books, Users, dan Ratings. Dataset ini awalnya dikumpulkan oleh Cai-Nicolas Ziegler dari komunitas Book-Crossing dan berisi data 278,858 users (anonymized) berisi 1,149,780 ratings (eksplisit / implisit) dari 271,379 buku. Contoh: [Kaggle](https://www.kaggle.com/datasets/arashnic/book-recommendation-dataset).
 
 - Users : Berisi data pengguna yang telah dianonimkan.  Berisi data demografis seperti Lokasi dan Usia (Age), namun jika tidak tersedia maka akan berisi nilai kosong (NULL).
 - Books : Buku diidentifikasi berdasarkan ISBN masing-masing. ISBN yang tidak valid telah dihapus dari dataset. Selain itu, disediakan juga informasi berbasis konten seperti Judul Buku (Book-Title), Penulis (Book-Author), Tahun Terbit (Year-Of-Publication), dan Penerbit (Publisher) yang diperoleh dari Amazon Web Services. Perlu dicatat bahwa jika terdapat lebih dari satu penulis, hanya penulis pertama yang disertakan. Dataset juga menyertakan tautan ke gambar sampul buku dalam tiga ukuran berbeda: Image-URL-S (kecil), Image-URL-M (sedang), dan Image-URL-L (besar). Tautan ini mengarah ke situs web Amazon.
@@ -69,10 +69,12 @@ Proses pemodelan melibatkan dua tahap utama:
 
 
 ## Evaluation
-Untuk mengevaluasi performa sistem rekomendasi berbasis konten ini, digunakan metrik Precision. Precision adalah salah satu metrik evaluasi yang umum digunakan dalam sistem informasi untuk mengukur ketepatan dari hasil rekomendasi. Metrik ini menunjukkan seberapa banyak rekomendasi yang diberikan benar-benar relevan dengan item input. 
+Untuk mengevaluasi performa sistem rekomendasi berbasis konten ini, digunakan metrik Precision@k. Precision adalah salah satu metrik evaluasi yang umum digunakan untuk mengukur ketepatan dari hasil rekomendasi. Metrik ini menunjukkan seberapa banyak item yang direkomendasikan (dalam hal ini, buku) benar-benar relevan bagi pengguna.
+
+Dalam konteks ini, "relevan" didefinisikan berdasarkan skor kemiripan (similarity score). Sebuah buku rekomendasi dianggap relevan jika skor kemiripannya dengan buku input melebihi ambang batas tertentu.
 ![Precision](metrik.png)
 
-Selain itu juga dilakukan visualisasi menggunakan bar chart untuk skor kesamaan antar 10 buku dengan judul "The Idiotic Girls"
+Selain itu juga dilakukan visualisasi menggunakan bar chart untuk skor kesamaan antar 10 buku dengan judul "Harry Potter"
 ![alt text](chart.png)
 
 

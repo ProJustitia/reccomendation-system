@@ -289,36 +289,22 @@ def get_book_recommendations(title, num_recommendations=10, similarity_threshold
             print(f"No similar books found above threshold {similarity_threshold}")
             return pd.DataFrame()
 
-        top_indices = [idx for idx, score in filtered_scores[:num_recommendations]]
-
-        recommendations = books_final.iloc[top_indices][[
+        top_indices = [idx for idx, score in filtered_scores[:num_recommendations * 3]]
+        temp_df = books_final.iloc[top_indices][[
             'Book-Title', 'Book-Author', 'Publisher', 'Year-Of-Publication',
             'avg_rating', 'rating_count', 'popularity_score'
         ]].copy()
+        temp_df['similarity_score'] = [score for idx, score in filtered_scores[:len(temp_df)]]
 
-        recommendations['similarity_score'] = [
-            score for idx, score in filtered_scores[:num_recommendations]
-        ]
+        temp_df = temp_df.drop_duplicates(subset='Book-Title', keep='first')
+
+        recommendations = temp_df.head(num_recommendations)
 
         return recommendations.round(3)
 
     except Exception as e:
         print(f"Error getting recommendations: {e}")
         return pd.DataFrame()
-
-def search_books(query, max_results=10):
-    mask = (
-        books_final['Book-Title'].str.contains(query, case=False, na=False) |
-        books_final['Book-Author'].str.contains(query, case=False, na=False) |
-        books_final['Publisher'].str.contains(query, case=False, na=False)
-    )
-
-    results = books_final[mask][[
-        'Book-Title', 'Book-Author', 'Publisher', 'Year-Of-Publication',
-        'avg_rating', 'rating_count'
-    ]].head(max_results)
-
-    return results
 
 """# Testing
 
@@ -358,9 +344,7 @@ if not author_recs.empty:
 Sel ini mendefinisikan dan menjalankan fungsi evaluate_recommendations untuk mengevaluasi kinerja model secara kuantitatif. Karena ini bukan model klasifikasi, metrik yang digunakan bersifat heuristik dengan mengambil 30 sampel buku acak, mencoba mendapatkan rekomendasi untuk masing-masing, dan mencatat hasilnya. Terdapat juga evaluasi performa model content-based menggunakan precision@k berbasis similarity score.
 """
 
-def evaluate_recommendations(sample_size=50, k=5, relevance_threshold=0.3):
-
-    sample_books = books_final.sample(n=min(sample_size, len(books_final)))
+def evaluate_recommendations_for_book(book_title, k=5, relevance_threshold=0.3):
     evaluation_metrics = {
         'total_tested': 0,
         'successful_recommendations': 0,
@@ -368,32 +352,31 @@ def evaluate_recommendations(sample_size=50, k=5, relevance_threshold=0.3):
         'precision_at_k': []
     }
 
-    for _, book in sample_books.iterrows():
-        try:
-            recs = get_book_recommendations(
-                book['Book-Title'],
-                num_recommendations=k,
-                similarity_threshold=0.05
-            )
+    try:
+        recs = get_book_recommendations(
+            book_title,
+            num_recommendations=k,
+            similarity_threshold=0.05
+        )
 
-            evaluation_metrics['total_tested'] += 1
+        evaluation_metrics['total_tested'] = 1
 
-            if not recs.empty:
-                evaluation_metrics['successful_recommendations'] += 1
-                evaluation_metrics['avg_similarity_score'].extend(recs['similarity_score'].tolist())
+        if not recs.empty:
+            evaluation_metrics['successful_recommendations'] = 1
+            evaluation_metrics['avg_similarity_score'].extend(recs['similarity_score'].tolist())
 
-                relevant = recs[recs['similarity_score'] >= relevance_threshold]
-                precision = len(relevant) / k
-                evaluation_metrics['precision_at_k'].append(precision)
+            relevant = recs[recs['similarity_score'] >= relevance_threshold]
+            precision = len(relevant) / k
+            evaluation_metrics['precision_at_k'].append(precision)
 
-        except:
-            continue
+    except Exception as e:
+        print(f"Error evaluating book '{book_title}': {e}")
 
-    success_rate = evaluation_metrics['successful_recommendations'] / evaluation_metrics['total_tested']
+    success_rate = evaluation_metrics['successful_recommendations'] / evaluation_metrics['total_tested'] if evaluation_metrics['total_tested'] > 0 else 0
     avg_similarity = np.mean(evaluation_metrics['avg_similarity_score']) if evaluation_metrics['avg_similarity_score'] else 0
     avg_precision = np.mean(evaluation_metrics['precision_at_k']) if evaluation_metrics['precision_at_k'] else 0
 
-    print(f"\n📊 EVALUATION RESULTS:")
+    print(f"\n📊 EVALUATION RESULTS for '{book_title}':")
     print(f"- Books tested: {evaluation_metrics['total_tested']}")
     print(f"- Successful recommendations: {evaluation_metrics['successful_recommendations']}")
     print(f"- Success rate: {success_rate:.2%}")
@@ -402,24 +385,32 @@ def evaluate_recommendations(sample_size=50, k=5, relevance_threshold=0.3):
     print(f"- System coverage: {len(books_final)} books")
 
     return evaluation_metrics
-eval_results = evaluate_recommendations(sample_size=30)
+
+# Example usage:
+eval_results = evaluate_recommendations_for_book("Harry Potter")
 
 """# Visualisasi hasil rekomendasi
 
 Memvisualisasikan rekomendasi dari judul buku yang spesifik
 """
 
-input_book_title = "The Idiot Girls"
+input_book_title = "Harry Potter"
 recommendations_df = get_book_recommendations(input_book_title, num_recommendations=10)
 
 if not recommendations_df.empty:
-    plt.figure(figsize=(12, 8))
+    recommendations_df = recommendations_df.head(10).copy()
+    recommendations_df['index'] = range(len(recommendations_df))
 
+    plt.figure(figsize=(12, 8))
     sns.barplot(
-        x=recommendations_df['similarity_score'],
-        y=recommendations_df['Book-Title'],
-        palette='viridis'
+        x='similarity_score',
+        y='index',
+        data=recommendations_df,
+        palette='viridis',
+        orient='h'
     )
+
+    plt.yticks(ticks=range(len(recommendations_df)), labels=recommendations_df['Book-Title'])
 
     plt.title(f'Top 10 Rekomendasi Buku untuk "{input_book_title}"')
     plt.xlabel('Skor Kemiripan (Cosine Similarity)')
@@ -427,8 +418,10 @@ if not recommendations_df.empty:
     plt.xlim(0, 1)
 
     for index, value in enumerate(recommendations_df['similarity_score']):
-        plt.text(value, index, f' {value:.3f}', va='center')
+        plt.text(value + 0.01, index, f'{value:.3f}', va='center')
 
+    plt.tight_layout()
     plt.show()
+
 else:
     print(f"Tidak ada data rekomendasi untuk divisualisasikan untuk buku '{input_book_title}'.")
