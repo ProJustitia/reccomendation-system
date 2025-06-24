@@ -56,13 +56,6 @@ Dataset users mencakup informasi pengguna seperti ID, lokasi, dan usia. Dari 278
 
 Dataset ratings berisi interaksi pengguna dengan buku dalam bentuk skor dari 0 hingga 10. Terdapat lebih dari 1,1 juta rating, di mana sebagian besar (lebih dari 700 ribu) memiliki nilai 0. Dalam konteks sistem rekomendasi, skor 0 umumnya dianggap sebagai implicit feedback—artinya pengguna mungkin telah melihat buku tetapi tidak benar-benar memberi penilaian. 
 
-
-- Missing Value : Terdapat nilai yang hilang pada beberapa kolom krusial. Pada Books.csv, kolom Book-Author memiliki 1 nilai hilang, Publisher memiliki 2 nilai hilang, dan Image-URL-M memiliki 3 nilai hilang.
-
-- Duplikasi Data : Tidak ditemukan adanya duplikasi data pada dataset.
-
-- Outlier pada Data : Terdapat 1084 outlier dalam kolom usia. Outlier tersebut tidak perlu ditangani karena dalam hal ini kolom usia tidak digunakan sama sekali. Teradapat juga 57871 outlier pada kolom rating buku. Outlier ini juga tidak perlu diatasi karena mereka adalah buku yang sangat populer. Menghapus buku-buku ini dari dataset akan menghilangkan item-item penting dari katalog.
-
 ## Data Preparation
 Proses persiapan data sangat penting untuk memastikan model menerima data yang berkualitas. Berikut adalah tahapan yang dilakukan secara berurutan:
 
