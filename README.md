@@ -29,25 +29,25 @@ Menjelaskan tujuan proyek yang menjawab pernyataan masalah:
 ## Data Understanding
 Dataset yang digunakan adalah "Book-Recommendation-Dataset" yang tersedia di platform Kaggle. Dataset ini terdiri dari tiga file CSV terpisah: Books, Users, dan Ratings. Dataset ini awalnya dikumpulkan oleh Cai-Nicolas Ziegler dari komunitas Book-Crossing dan berisi data 278,858 users (anonymized) berisi 1,149,780 ratings (eksplisit / implisit) dari 271,379 buku. Contoh: [Kaggle](https://www.kaggle.com/datasets/arashnic/book-recommendation-dataset).
 
-### Dataset Books
-- **ISBN**: International Standard Book Number, kode unik buku.
-- **Book-Title**: Judul lengkap buku.
-- **Book-Author**: Nama penulis.
-- **Year-Of-Publication**: Tahun penerbitan buku.
-- **Publisher**: Nama perusahaan penerbit.
-- **Image-URL-S**: URL ke gambar sampul ukuran kecil (small).
-- **Image-URL-M**: URL ke gambar sampul ukuran sedang (medium).
-- **Image-URL-L**: URL ke gambar sampul ukuran besar (large).
+- ### Dataset Books
+    - **ISBN**: International Standard Book Number, kode unik buku.
+    - **Book-Title**: Judul lengkap buku.
+    - **Book-Author**: Nama penulis.
+    - **Year-Of-Publication**: Tahun penerbitan buku.
+    - **Publisher**: Nama perusahaan penerbit.
+    - **Image-URL-S**: URL ke gambar sampul ukuran kecil (small).
+    - **Image-URL-M**: URL ke gambar sampul ukuran sedang (medium).
+    - **Image-URL-L**: URL ke gambar sampul ukuran besar (large).
 
-### Dataset Users
-- **User-ID**: ID unik pengguna.
-- **Location**: Lokasi pengguna.
-- **Age**: Usia pengguna.
+- ### Dataset Users
+    - **User-ID**: ID unik pengguna.
+    - **Location**: Lokasi pengguna.
+    - **Age**: Usia pengguna.
 
-### Dataset Ratings
-- **User-ID**: ID unik pengguna.
-- **ISBN**: ISBN buku yang diberi rating.
-- **Book-Rating**: Nilai rating dari 1-10 (eksplisit) atau 0 (implisit).
+- ### Dataset Ratings
+    - **User-ID**: ID unik pengguna.
+    - **ISBN**: ISBN buku yang diberi rating.
+    - **Book-Rating**: Nilai rating dari 1-10 (eksplisit) atau 0 (implisit).
 
 
 - Users : Berisi data pengguna yang telah dianonimkan.  Berisi data demografis seperti Lokasi dan Usia (Age), namun jika tidak tersedia maka akan berisi nilai kosong (NULL).
