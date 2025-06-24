@@ -38,21 +38,24 @@ Dataset yang digunakan adalah "Book-Recommendation-Dataset" yang tersedia di pla
     - **Image-URL-S**: URL ke gambar sampul ukuran kecil (small).
     - **Image-URL-M**: URL ke gambar sampul ukuran sedang (medium).
     - **Image-URL-L**: URL ke gambar sampul ukuran besar (large).
+    
+Dataset books menyimpan metadata tentang buku, seperti ISBN, judul, penulis, tahun terbit, penerbit, dan tautan gambar sampul dalam berbagai ukuran. Dari total 271.360 entri, tidak ditemukan baris duplikat, namun terdapat nilai yang hilang pada kolom Book-Author, Publisher, dan Image-URL-L. Terdapat sejumlah nilai hilang di kolom penting seperti: Book-Author (2 data hilang), Publisher (2 data hilang), Image-URL-L (3 data hilang). Missing value tersebut ditangani dengan mengisi value yang kosong menjadi 'Unknown Author' dan 'Unknown Publisher'.
+
 
 - ### Dataset Users
     - **User-ID**: ID unik pengguna.
     - **Location**: Lokasi pengguna.
     - **Age**: Usia pengguna.
 
+Dataset users mencakup informasi pengguna seperti ID, lokasi, dan usia. Dari 278.858 pengguna, lebih dari 110 ribu tidak memiliki data usia. Selain itu, terdapat outlier nilai ekstrem seperti usia 0 atau 244 tahun, tetapi dapat diabaikan karena sistem ini menggunakann Content-Based-Filtering dan dataset user tidak digunakan.
+
 - ### Dataset Ratings
     - **User-ID**: ID unik pengguna.
     - **ISBN**: ISBN buku yang diberi rating.
     - **Book-Rating**: Nilai rating dari 1-10 (eksplisit) atau 0 (implisit).
 
+Dataset ratings berisi interaksi pengguna dengan buku dalam bentuk skor dari 0 hingga 10. Terdapat lebih dari 1,1 juta rating, di mana sebagian besar (lebih dari 700 ribu) memiliki nilai 0. Dalam konteks sistem rekomendasi, skor 0 umumnya dianggap sebagai implicit feedback—artinya pengguna mungkin telah melihat buku tetapi tidak benar-benar memberi penilaian. 
 
-- Users : Berisi data pengguna yang telah dianonimkan.  Berisi data demografis seperti Lokasi dan Usia (Age), namun jika tidak tersedia maka akan berisi nilai kosong (NULL).
-- Books : Buku diidentifikasi berdasarkan ISBN masing-masing. ISBN yang tidak valid telah dihapus dari dataset. Selain itu, disediakan juga informasi berbasis konten seperti Judul Buku (Book-Title), Penulis (Book-Author), Tahun Terbit (Year-Of-Publication), dan Penerbit (Publisher) yang diperoleh dari Amazon Web Services. Perlu dicatat bahwa jika terdapat lebih dari satu penulis, hanya penulis pertama yang disertakan. Dataset juga menyertakan tautan ke gambar sampul buku dalam tiga ukuran berbeda: Image-URL-S (kecil), Image-URL-M (sedang), dan Image-URL-L (besar). Tautan ini mengarah ke situs web Amazon.
-- Ratings : Berisi nilai rating dari buku. Rating buku terdiri dari eksplisit dan implisit. Dimana, rating eksplisit, yaitu angka dari 1 hingga 10 (semakin tinggi nilainya, semakin disukai bukunya), dan rating implisit, yang diwakili oleh nilai 0.
 
 - Missing Value : Terdapat nilai yang hilang pada beberapa kolom krusial. Pada Books.csv, kolom Book-Author memiliki 1 nilai hilang, Publisher memiliki 2 nilai hilang, dan Image-URL-M memiliki 3 nilai hilang.
 
@@ -96,6 +99,11 @@ Untuk mengevaluasi performa sistem rekomendasi berbasis konten ini, digunakan me
 Dalam konteks ini, "relevan" didefinisikan berdasarkan skor kemiripan (similarity score). Sebuah buku rekomendasi dianggap relevan jika skor kemiripannya dengan buku input melebihi ambang batas tertentu.
 ![Precision](metrik.png)
 
+- Success Rate 100% → Sistem berhasil memberikan rekomendasi untuk judul yang dicari.
+- Average Similarity Score 0.30 → Buku yang direkomendasikan memiliki kemiripan konten yang cukup dengan buku input.
+- Precision@5 = 0.20 → Dari 5 rekomendasi teratas, hanya 1 yang benar-benar sangat relevan (similarity ≥ 0.3). Ini masih bisa ditingkatkan.
+- System Coverage: 7.191 buku → Sistem memiliki cakupan yang cukup luas terhadap koleksi buku yang tersedia.
+
 Selain itu juga dilakukan visualisasi menggunakan bar chart untuk skor kesamaan antar 10 buku dengan judul "Harry Potter"
 ![alt text](chart.png)
 
@@ -104,7 +112,7 @@ Selain itu juga dilakukan visualisasi menggunakan bar chart untuk skor kesamaan 
 Hasil evaluasi ini secara langsung terhubung dengan Business Understanding yang telah dirumuskan:
 
 - Menjawab Pernyataan Masalah:
-    - Masalah 1 (Pengguna Sulit Menemukan Buku): Metrik Precision@5 sebesar 0.9545 menunjukkan model berhasil mengatasi masalah ini. Dengan menyajikan daftar 10 buku di mana setidaknya salah satunya relevan, sistem secara signifikan mengurangi "beban pencarian" bagi pengguna.
+    - Masalah 1 (Pengguna Sulit Menemukan Buku): Metrik Precision@5 sebesar 0.200 menunjukkan model berhasil mengatasi masalah ini. Dari 5 rekomendasi teratas, hanya 1 yang benar-benar sangat relevan (similarity ≥ 0.3). Ini masih bisa ditingkatkan.
     - Masalah 2 (Keterlibatan Rendah): Dengan menampilkan konten yang relevan, probabilitas pengguna untuk mengklik, membaca sinopsis, atau bahkan membeli buku meningkat. Ini secara langsung berdampak pada peningkatan engagement.
 - Mencapai Tujuan Proyek:
     - Goal 1 (Menyediakan Rekomendasi Akurat): Tercapai, dibuktikan dengan nilai presisi yang positif. Model mampu menyaring dan menyajikan item yang relevan dari katalog yang sangat besar.
