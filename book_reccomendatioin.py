@@ -23,7 +23,10 @@ from sklearn.decomposition import TruncatedSVD
 from sklearn.metrics import mean_squared_error, precision_score, recall_score, f1_score
 from scipy.sparse import csr_matrix
 
-"""# Load Dataset"""
+"""# Load Dataset
+
+Kode pada bagian ini adalah serangkaian perintah yang digunakan di lingkungan Google Colab untuk mengunduh dataset dari Kaggle, mengekstrak file dataset, dan memuat serta menampilkan informasi dasar tentang dataset tersebut.
+"""
 
 path = kagglehub.dataset_download("arashnic/book-recommendation-dataset")
 print("Path to dataset files:", path)
@@ -38,6 +41,8 @@ print(f"Ratings shape: {ratings.shape}")
 """# Data Understanding
 
 Pada bagian ini, kita melakukan eksplorasi awal pada dataset untuk memahami struktur, konten, dan properti statistiknya. Ini termasuk memeriksa tipe data, melihat ringkasan statistik, mengidentifikasi nilai yang hilang (missing values).
+
+## Dataset Books
 """
 
 print("\nBOOKS DATASET OVERVIEW:")
@@ -69,7 +74,69 @@ print(f"Total duplicated rows: {duplicates.sum()}")
 if duplicates.any():
     print(books[duplicates].head())
 
-"""# Outlier pada data"""
+"""# Dataset Users"""
+
+print("\nUSERS DATASET OVERVIEW:")
+print("-" * 30)
+print(users.head())
+print(f"\nDataset Info:")
+print(f"Shape: {users.shape}")
+print(f"Columns: {list(users.columns)}")
+
+print(f"\nData Types:")
+print(users.dtypes)
+
+print(f"\nMissing Values:")
+missing_users = users.isnull().sum()
+print(missing_users[missing_users > 0])
+
+print(f"\nUSERS DATASET STATISTICS:")
+print("-" * 30)
+print(users.describe(include='all'))
+
+print(f"\nDuplicate Rows in Users Dataset:")
+duplicates = users.duplicated()
+print(f"Total duplicated rows: {duplicates.sum()}")
+
+if duplicates.any():
+    print(users[duplicates].head())
+
+"""# Dataset Ratings"""
+
+print("\nRATINGS DATASET OVERVIEW:")
+print("-" * 30)
+print(ratings.head())
+
+print(f"\nDataset Info:")
+print(f"Shape: {ratings.shape}")
+print(f"Columns: {list(ratings.columns)}")
+
+print(f"\nData Types:")
+print(ratings.dtypes)
+
+print(f"\nMissing Values:")
+missing_ratings = ratings.isnull().sum()
+print(missing_ratings[missing_ratings > 0])
+
+print(f"\nRATINGS DATASET STATISTICS:")
+print("-" * 30)
+print(ratings.describe(include='all'))
+
+print(f"\nRATINGS DISTRIBUTION:")
+print("-" * 25)
+print(ratings['Book-Rating'].value_counts().sort_index())
+
+print(f"\nDuplicate Rows in Ratings Dataset:")
+duplicates = ratings.duplicated()
+print(f"Total duplicated rows: {duplicates.sum()}")
+
+if duplicates.any():
+    print(ratings[duplicates].head())
+
+"""# Outlier pada data
+
+Melakukan pengecekan Outlier pada dataset menggunakan metode IQR
+"""
 
 def detect_outliers_iqr(df, iqr_multiplier=1.5, verbose=True, show_rows=False):
     outlier_dict = {}
@@ -259,7 +326,10 @@ print(f"Similarity matrix shape: {cosine_sim_matrix.shape}")
 
 book_indices = pd.Series(books_final.index, index=books_final['Book-Title'])
 
-"""# Recommend Function"""
+"""# Recommend Function
+
+Fungsi ini digunakan untuk menghasilkan daftar buku rekomendasi yang mirip dengan buku yang dicari pengguna berdasarkan pendekatan Content-Based Filtering menggunakan cosine similarity dari fitur konten.
+"""
 
 def get_book_recommendations(title, num_recommendations=10, similarity_threshold=0.1):
     try:
@@ -310,6 +380,20 @@ def get_book_recommendations(title, num_recommendations=10, similarity_threshold
 
 Pengujian sederhana untuk memastikan fungsi yang dibuat bekerja dengan benar dengan mencoba mencari buku "Harry Potter" dan meminta rekomendasi untuk buku tersebut, serta mencoba meminta rekomendasi berdasarkan penulis "Stephen King".
 """
+
+def search_books(query, max_results=10):
+    mask = (
+        books_final['Book-Title'].str.contains(query, case=False, na=False) |
+        books_final['Book-Author'].str.contains(query, case=False, na=False) |
+        books_final['Publisher'].str.contains(query, case=False, na=False)
+    )
+
+    results = books_final[mask][[
+        'Book-Title', 'Book-Author', 'Publisher', 'Year-Of-Publication',
+        'avg_rating', 'rating_count'
+    ]].head(max_results)
+
+    return results
 
 print("1. BOOK SEARCH TEST")
 print("-" * 20)
